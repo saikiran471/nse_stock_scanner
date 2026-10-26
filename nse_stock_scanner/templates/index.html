@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NSE Stock Scanner</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,sans-serif;color:#172033;background:#f4f6fa}
+*{box-sizing:border-box}body{margin:0}main{max-width:1200px;margin:36px auto;padding:0 18px 50px}
+h1{font-size:clamp(28px,4vw,40px);letter-spacing:-1px;margin:0 0 8px}h2{margin-top:0}
+p{line-height:1.55;color:#667085}.panel{background:#fff;border:1px solid #e4e7ec;border-radius:16px;padding:22px;margin:18px 0;box-shadow:0 5px 20px #10182808}
+label{display:block;font-weight:650;margin-bottom:9px}textarea{width:100%;min-height:120px;border:1px solid #cfd5df;border-radius:10px;padding:12px;font:14px ui-monospace,monospace}
+button{margin-top:12px;background:#315efb;color:white;border:0;border-radius:10px;padding:12px 18px;font-weight:700;cursor:pointer}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}.stat{border:1px solid #e4e7ec;border-radius:12px;padding:14px}.muted{font-size:12px;color:#667085}.num{font-size:23px;font-weight:750;margin-top:7px}
+.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:950px}th,td{text-align:left;padding:12px;border-bottom:1px solid #e4e7ec;font-size:13px}th{color:#667085;background:#f9fafb;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+.pill{display:inline-block;padding:5px 8px;border-radius:7px;font-size:11px;font-weight:800;white-space:nowrap}.buy{background:#dcfae6;color:#05603a}.watch{background:#fef0c7;color:#93370d}.avoid{background:#fee4e2;color:#912018}
+.notice{padding:13px 15px;border-radius:10px;background:#fffaeb;color:#7a4b00;font-size:13px;line-height:1.55}.error{background:#fff1f0;color:#b42318;padding:12px;border-radius:8px}.badlist{font-size:13px;color:#b42318}.small{font-size:12px;color:#667085}
+</style>
+</head>
+<body><main>
+<header><h1>NSE Stock Scanner</h1><p>Rank Indian equities using a 20-trading-day machine-learning return estimate, a simple risk score, and walk-forward tests.</p></header>
+<section class="panel">
+<form method="post">
+<label for="tickers">NSE Yahoo Finance tickers (comma-separated)</label>
+<textarea id="tickers" name="tickers" spellcheck="false">{{ tickers }}</textarea>
+<div class="small">Examples: RELIANCE.NS, TCS.NS, INFY.NS, HDFCBANK.NS. You can replace this starter universe with stocks you want to evaluate.</div>
+<button type="submit">Scan stocks</button>
+</form>
+{% if error %}<p class="error">{{ error }}</p>{% endif %}
+</section>
+{% if scanned_at %}
+<section class="panel">
+<h2>Scan results</h2><p>Completed {{ scanned_at }} · Forecast horizon {{ horizon }} trading days · Assumed round-trip cost {{ "%.2f"|format(cost_pct) }}%</p>
+<div class="notice"><strong>Interpretation:</strong> “BUY CANDIDATE” is a mechanical screen label, not a personalized recommendation or a guarantee. Estimates use historical price/volume features only. Data may be delayed or incomplete.</div>
+</section>
+{% if results %}
+<section class="panel">
+<div class="stats">
+<div class="stat"><div class="muted">Tickers scanned successfully</div><div class="num">{{ results|length }}</div></div>
+<div class="stat"><div class="muted">Buy candidates</div><div class="num">{{ results|selectattr("label","equalto","BUY CANDIDATE")|list|length }}</div></div>
+<div class="stat"><div class="muted">Watchlist</div><div class="num">{{ results|selectattr("label","equalto","WATCH")|list|length }}</div></div>
+<div class="stat"><div class="muted">Avoid</div><div class="num">{{ results|selectattr("label","equalto","AVOID")|list|length }}</div></div>
+</div>
+</section>
+<section class="panel table-wrap">
+<table>
+<thead><tr><th>Rank / ticker</th><th>Screen label</th><th>Latest close (₹)</th><th>Est. 20-day return</th><th>Model price (₹)</th><th>Risk / 100</th><th>Ann. volatility</th><th>1Y max drawdown</th><th>Walk-forward MAE</th><th>Directional accuracy</th><th>Net strategy return</th></tr></thead>
+<tbody>
+{% for r in results %}
+<tr>
+<td><strong>{{ loop.index }}. {{ r.ticker }}</strong><br><span class="muted">{{ r.date }}</span></td>
+<td><span class="pill {% if r.label == 'BUY CANDIDATE' %}buy{% elif r.label == 'WATCH' %}watch{% else %}avoid{% endif %}">{{ r.label }}</span></td>
+<td>{{ "%.2f"|format(r.close) }}</td>
+<td>{{ "%+.2f"|format(r.predicted_return_pct) }}%</td>
+<td>{{ "%.2f"|format(r.predicted_price) }}</td>
+<td>{{ r.risk_score }}/100</td>
+<td>{{ "%.1f"|format(r.annual_vol_pct) }}%</td>
+<td>{{ "%.1f"|format(r.max_drawdown_pct) }}%</td>
+<td>{% if r.backtest.get("status") == "OK" %}{{ "%.2f"|format(r.backtest.mae_pct) }}%{% else %}N/A{% endif %}</td>
+<td>{% if r.backtest.get("status") == "OK" %}{{ "%.0f"|format(r.backtest.directional_accuracy_pct) }}%{% else %}N/A{% endif %}</td>
+<td>{% if r.backtest.get("status") == "OK" %}{{ "%+.2f"|format(r.backtest.strategy_return_pct) }}% ({{ r.backtest.active_positions }}/{{ r.backtest.trades }}){% else %}N/A{% endif %}</td>
+</tr>
+{% endfor %}
+</tbody></table>
+<p class="small">Net strategy return is a tiny historical walk-forward sample, after the configured assumed round-trip cost. It is not annualized and is not a reliable estimate of future performance.</p>
+</section>
+{% endif %}
+{% if errors %}
+<section class="panel"><h3>Tickers that could not be scanned</h3><ul class="badlist">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul></section>
+{% endif %}
+{% endif %}
+<section class="panel">
+<h2>How the score works</h2>
+<p><strong>Return estimate:</strong> HistGradientBoostingRegressor predicts the next 20-trading-day adjusted-close return using trailing returns, moving-average gaps, volatility, RSI, volume trend, and drawdown.</p>
+<p><strong>Walk-forward evaluation:</strong> Historical forecast origins are tested in time order. Training rows are purged unless their 20-day target would already have been known at the forecast date. This is intended to reduce look-ahead leakage, but the test sample is small and overlapping market regimes remain a limitation.</p>
+<p><strong>Risk score:</strong> A 0–100 heuristic based on recent annualized volatility and trailing drawdown. It is not a standardized or personalized risk measure.</p>
+<div class="notice"><strong>Important limitations:</strong> The scanner does not include company fundamentals, corporate announcements, macroeconomic conditions, taxes, slippage, liquidity impact, or a full portfolio risk model. The 0.30% round-trip cost is only an editable assumption; real costs vary by broker, trade size, taxes, and market conditions. Validate with more history and a paper-trading period before considering real trades.</div>
+</section>
+<footer class="small">Market data is retrieved using yfinance from Yahoo Finance and may be delayed, incomplete, rate-limited, or revised. See README.md for setup and limitations.</footer>
+</main></body></html>
