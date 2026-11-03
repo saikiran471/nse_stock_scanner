@@ -1,7 +1,8 @@
-flask
+flask>=3.0,<4.0
 gunicorn
-pandas
-numpy
+pandas>=2.1
+numpy>=1.26
 requests
-yfinance
+yfinance>=0.2.50
+scikit-learn>=1.4
 ta
