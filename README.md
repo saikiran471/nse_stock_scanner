@@ -1,173 +1,148 @@
-📈 NSE Stock Price Predictor & Scanner
+# NSE Stock Price Predictor Using Flask and Machine Learning
 
-A machine learning-powered web application built with Python, Flask, and Scikit-learn to analyze NSE-listed stocks, predict potential returns, evaluate investment risk, and rank stocks based on data-driven screening criteria.
+## 1. Introduction
+NSE Stock Price Predictor is a web-based application developed using Python, Flask, and Machine Learning. It analyzes historical Indian stock market data to estimate potential stock returns over the next 20 trading days. The application scans selected NSE-listed stocks, ranks them, evaluates risk, and provides screening signals to support investment research.
 
-🌐 Live Demo: https://nse-stock-scanner-2-jvfv.onrender.com
+## 2. Objectives
+- Analyze historical stock market data.
+- Predict potential future stock returns using machine learning.
+- Scan and rank multiple NSE-listed stocks.
+- Evaluate stock risk using volatility and drawdown.
+- Test strategy performance through historical backtesting.
+- Display results through a user-friendly web interface.
 
-🚀 Project Overview
+## 3. Technologies Used
+- **Python:** Core programming language.
+- **Flask:** Web application framework.
+- **Pandas and NumPy:** Data processing and numerical calculations.
+- **yfinance:** Historical stock market data retrieval.
+- **Scikit-learn:** Machine learning model development.
+- **HTML and CSS:** Web page structure and styling.
+- **JavaScript and Chart.js:** Interactive charts and result visualization.
 
-The NSE Stock Price Predictor is a web-based stock analysis and screening application that uses historical Indian stock market data to estimate potential stock returns over the next 20 trading days.
+## 4. How the Project Was Developed
 
-The application scans a predefined list of NSE-listed companies, applies machine learning techniques, evaluates risk factors, and generates stock classifications to help users identify potential investment opportunities.
+### Step 1: Data Collection
+Historical stock prices are retrieved from Yahoo Finance for selected NSE stocks. NSE ticker symbols generally end with `.NS`, such as `RELIANCE.NS` and `TCS.NS`.
 
-It also includes historical walk-forward backtesting to evaluate the performance of its screening strategy.
+### Step 2: Data Preprocessing
+The collected data is organized and checked for missing or invalid values. Historical price and volume information is prepared for analysis.
 
-✨ Key Features
-📊 Automated Stock Scanning: Analyzes multiple NSE-listed stocks.
-🤖 Machine Learning Predictions: Estimates potential returns over the next 20 trading days.
-📈 Stock Ranking: Ranks stocks based on predicted returns and configured screening criteria.
-⚠️ Risk Assessment: Evaluates volatility and maximum drawdown.
-🎯 Investment Signals: Classifies stocks into Buy Candidate, Watch, and Avoid categories.
-🔍 Technical Indicators: Uses RSI, moving averages, historical returns, and volume changes.
-🧪 Historical Backtesting: Evaluates strategy performance using walk-forward testing.
-💰 Transaction Cost Analysis: Includes an assumed 0.30% round-trip transaction cost in relevant backtesting calculations.
-🌐 Interactive Web Interface: Displays stock analysis and results through a Flask-powered dashboard.
-🛠️ Technologies Used
-Technology	Purpose
-Python	Core programming language
-Flask	Backend web framework
-Pandas	Data manipulation and analysis
-NumPy	Numerical computations
-yfinance	Historical stock market data
-Scikit-learn	Machine learning model
-HTML & CSS	Frontend development
-JavaScript	Interactive functionality
-Chart.js	Data visualization
-🧠 Machine Learning Approach
+### Step 3: Feature Engineering
+The application calculates indicators such as:
+- Historical returns
+- Moving-average differences
+- Price volatility
+- Relative Strength Index (RSI)
+- Volume changes
+- Maximum drawdown
 
-The application uses the HistGradientBoostingRegressor algorithm from Scikit-learn to estimate potential stock returns over a 20-trading-day prediction horizon.
+These features help the model identify patterns in historical market data.
 
-Feature Engineering
+### Step 4: Machine Learning
+A HistGradientBoostingRegressor model from Scikit-learn is used to estimate stock returns over a 20-trading-day horizon. The model learns relationships between historical market features and subsequent returns.
 
-The model uses several historical market features, including:
+### Step 5: Stock Scanning and Ranking
+The application processes the selected stock universe, estimates potential returns, calculates risk scores, and ranks stocks according to its screening rules.
 
-Historical stock returns
-Moving-average differences
-Price volatility
-Relative Strength Index (RSI)
-Trading volume changes
-Maximum drawdown
+### Step 6: Backtesting
+Walk-forward backtesting evaluates the strategy on historical periods. The application accounts for an assumed round-trip transaction cost of 0.30% when calculating relevant performance metrics.
 
-These features are used to identify patterns in historical stock market data and estimate potential future returns.
+### Step 7: Web Application
+Flask connects the Python analysis to a browser-based interface. The results are presented in a table or dashboard so users can compare stocks.
 
-Prediction Workflow
-Retrieve historical stock market data.
-Clean and preprocess the collected data.
-Calculate technical indicators and relevant features.
-Apply the trained machine learning model.
-Estimate potential 20-day stock returns.
-Calculate risk-related metrics.
-Rank stocks and generate screening classifications.
-📉 Backtesting
+## 5. Features
+- Automated scanning of a predefined NSE stock list.
+- Machine-learning-based return estimates.
+- Stock ranking based on screening criteria.
+- Risk assessment using volatility and drawdown.
+- Buy Candidate, Watch, and Avoid classifications.
+- Walk-forward backtesting.
+- Transaction-cost-aware strategy evaluation.
+- Web-based results display.
 
-The application includes a walk-forward backtesting mechanism to evaluate the historical performance of its stock screening strategy.
+## 6. How to Install and Run
 
-Backtesting considers:
+### Requirements
+Install Python 3.10 or a compatible version supported by the project's dependencies.
 
-Historical stock returns.
-Strategy performance across historical periods.
-Risk-related measurements.
-An assumed 0.30% round-trip transaction cost.
+### Installation
+1. Download or extract the project folder.
+2. Open a terminal in the project directory.
+3. Install the required packages:
 
-This helps assess how the screening approach would have performed under historical market conditions.
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-📋 Understanding Stock Signals
-Signal	Description
-🟢 BUY CANDIDATE	Meets the configured prediction and risk criteria.
-🟡 WATCH	Requires further monitoring or does not fully meet candidate criteria.
-🔴 AVOID	Does not satisfy the configured screening criteria.
+4. Start the application:
 
-Important Metrics:
+   ```bash
+   python app.py
+   ```
 
-Predicted Return: Estimated percentage return over the next 20 trading days.
-Risk Score: Measures estimated risk using factors such as volatility and drawdown. Higher scores indicate greater estimated risk.
-Backtesting Results: Historical strategy performance, including estimated transaction costs.
-⚙️ Installation & Setup
+5. Open the following address in your browser:
 
-Follow these steps to run the project locally.
+   `http://127.0.0.1:5000`
 
-1. Clone the Repository
-bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+## 7. How to Use the Application
 
-2. Navigate to the Project Directory
-bash
-cd nse_stock_scanner
+1. Start the Flask application.
+2. Open the web interface in your browser.
+3. Run the stock scan using the available interface.
+4. Wait for historical stock data to be downloaded and analyzed.
+5. Review the ranked list of stocks.
+6. Compare predicted returns and risk scores.
+7. Use the screening labels to identify stocks for further research.
+8. Review the backtesting results to understand historical strategy performance.
 
-3. Install Dependencies
-bash
-pip install -r requirements.txt
+The scanner uses a predefined stock universe. Adding more stocks requires updating the ticker list in the application.
 
-4. Run the Application
-bash
-python app.py
+## 8. Understanding the Results
 
-5. Open in Your Browser
+- **Predicted Return:** The model's estimated percentage return over the next 20 trading days.
+- **Risk Score:** A score based on risk-related measures, including recent volatility and drawdown. A higher score indicates greater estimated risk.
+- **BUY CANDIDATE:** The stock meets the application's configured prediction and risk criteria.
+- **WATCH:** The stock does not fully meet the candidate criteria and may require further monitoring.
+- **AVOID:** The stock fails the configured screening criteria.
+- **Backtesting Metrics:** Historical results used to evaluate the strategy, including the effect of estimated transaction costs.
 
-Visit:
+These labels are screening outputs, not guaranteed trading recommendations.
 
-text
-http://127.0.0.1:5000
+## 9. Project Structure
 
-
-The application should now be running locally.
-
-📂 Project Structure
-text
+```text
 nse_stock_scanner/
-│
 ├── app.py
 ├── requirements.txt
 ├── README.md
-│
 └── templates/
     └── index.html
+```
 
-File	Description
-app.py	Flask backend, stock scanning, machine learning, data processing, and backtesting logic.
-requirements.txt	Required Python dependencies.
-templates/index.html	Frontend dashboard and stock analysis interface.
-README.md	Project documentation.
-📖 How to Use
-Open the live application or run it locally.
-Access the stock scanner dashboard.
-Start the stock scanning process.
-Allow the application to retrieve and analyze historical market data.
-Review the ranked NSE stock list.
-Compare predicted returns and risk scores.
-Explore the generated Buy Candidate, Watch, and Avoid classifications.
-Review historical backtesting results.
+- `app.py`: Contains Flask routes, data processing, machine learning, stock scanning, and backtesting logic.
+- `requirements.txt`: Lists the Python packages required to run the project.
+- `templates/index.html`: Contains the web interface for displaying stock analysis and results.
+- `README.md`: Provides project documentation and setup instructions.
 
-The application currently uses a predefined universe of NSE-listed stocks. The ticker list can be modified to include additional companies.
+## 10. Limitations
+- Predictions depend on the quality and availability of historical data.
+- The model cannot reliably predict unexpected market events.
+- Yahoo Finance data availability and update timing may vary.
+- Results depend on the predefined stock universe and model settings.
+- Historical backtesting does not guarantee future profitability.
+- Transaction costs and simulated execution may differ from actual trading conditions.
 
-⚠️ Limitations
-Predictions depend on the quality and availability of historical market data.
-Machine learning models cannot reliably predict unexpected market events.
-Yahoo Finance data availability and update frequency may vary.
-Results depend on the predefined stock universe and model configuration.
-Historical backtesting does not guarantee future profitability.
-Actual brokerage fees, taxes, slippage, and execution prices may differ from simulated assumptions.
-🔮 Future Enhancements
-Individual NSE stock search functionality.
-Expandable stock universe with configurable filters.
-Additional technical indicators.
-Interactive historical stock price charts.
-Portfolio tracking and watchlists.
-Comparison of multiple machine learning algorithms.
-Benchmark comparisons against market indices.
-Integration of additional financial data sources.
-🎯 Project Objective
+## 11. Future Enhancements
+- Add a search option for individual NSE stocks.
+- Expand the stock universe and provide configurable filters.
+- Add more technical indicators and benchmark comparisons.
+- Include portfolio tracking and watchlists.
+- Add charts for historical prices and predicted returns.
+- Improve validation and compare multiple machine learning models.
+- Integrate additional data sources where permitted.
 
-The primary objective of this project is to demonstrate the practical application of Machine Learning, Data Analytics, and Web Development in financial market analysis.
+## 12. Conclusion
+The NSE Stock Price Predictor demonstrates how machine learning and web development can be combined to analyze stocks, estimate potential returns, assess risk, and rank investment candidates. It provides an educational platform for exploring data-driven stock screening and historical strategy evaluation.
 
-It combines historical market data, feature engineering, predictive modeling, risk evaluation, and web technologies to create an accessible stock screening platform.
-
-👨‍💻 Disclaimer
-
-This project is developed strictly for educational and research purposes.
-
-Predicted returns and generated stock classifications are estimates based on historical data and configured model criteria. They are not guaranteed investment outcomes or financial advice. Always conduct independent research before making investment decisions.
-
-⭐ If you find this project interesting, consider giving this repository a star!
-
-🌐 Try the Live Application: https://nse-stock-scanner-2-jvfv.onrender.com
+**Disclaimer:** This project is intended for educational and research purposes only. Predictions are estimates, not guarantees of future returns or financial advice.
