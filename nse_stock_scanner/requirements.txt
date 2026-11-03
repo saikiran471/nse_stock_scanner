@@ -1,8 +1,6 @@
 flask>=3.0,<4.0
-gunicorn
+yfinance>=0.2.50
 pandas>=2.1
 numpy>=1.26
-requests
-yfinance>=0.2.50
 scikit-learn>=1.4
-ta
+
