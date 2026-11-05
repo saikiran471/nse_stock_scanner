@@ -16,12 +16,7 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
 # Edit this starter universe in the UI or here. These are examples, not recommendations.
-DEFAULT_UNIVERSE = [
-    "RELIANCE.NS", "TCS.NS", "INFY.NS", "HDFCBANK.NS", "ICICIBANK.NS",
-    "SBIN.NS", "BHARTIARTL.NS", "ITC.NS", "LT.NS", "HINDUNILVR.NS",
-    "KOTAKBANK.NS", "AXISBANK.NS", "SUNPHARMA.NS", "MARUTI.NS", "TATAMOTORS.NS",
-    "NTPC.NS", "POWERGRID.NS", "TITAN.NS", "ASIANPAINT.NS", "WIPRO.NS",
-]
+DEFAULT_UNIVERSE = []
 HORIZON = 20
 HISTORY_PERIOD = "5y"
 ROUND_TRIP_COST = 0.003  # Assumed 0.30% round-trip cost; customize to your actual costs.
@@ -218,11 +213,11 @@ def index():
     error = None
     if request.method == "POST":
         raw = request.form.get("tickers", raw)
-        tickers = list(dict.fromkeys(
+      raw = ", ".join(DEFAULT_UNIVERSE)
             item.strip().upper() for item in raw.replace("\n", ",").split(",")
             if item.strip()
         ))
-        tickers = [t for t in tickers if len(t) <= 24 and all(c.isalnum() or c in ".-_^=" for c in t)]
+        raw = request.form.get("tickers", raw)
         if not tickers:
             error = "Enter at least one valid ticker, separated by commas."
         elif len(tickers) > 40:
